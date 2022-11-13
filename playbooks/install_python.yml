@@ -1,0 +1,25 @@
+---
+- name: Install Python 3.10.4.
+  hosts: windows1
+  gather_facts: false
+  vars:
+    install_path: \\192.168.1.100\programs\python\3.10.4\python-3.10.4-amd64.exe
+
+  tasks:
+
+  - name: Install Python 3.10.4
+    win_package:
+      path: "{{ install_path }}"
+      product_id: '{{ item }}'
+      arguments: "/quiet InstallAllUsers=1 PrependPath=1 Include_pip=1"
+      # arguments: "/quiet /uninstall"
+      state: present
+    loop:
+    - '{691AAAA1-FE86-4973-8DA2-6AA2B3327562}'
+    - '{FBCE87D2-C7FC-47AB-B870-A0613A081CFD}'
+    - '{7CBB42A3-C12B-413C-AA93-65DA4C31D421}'
+    - '{0707FD0B-C82B-4730-8967-D6C3003BCAE0}'
+    loop_control:
+      pause: 0
+
+...

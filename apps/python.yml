@@ -1,0 +1,28 @@
+---
+- name: Install Python 3.10.4.
+  hosts: windows
+  gather_facts: false
+  vars:
+    remote_path: https://www.python.org/ftp/python/3.10.4/python-3.10.4-amd64.exe
+    local_path: C:\Windows\Temp\python-3.10.6-amd64.exe
+
+  tasks:
+
+  - name: Download
+    ansible.builtin.win_get_url:
+      url: "{{ remote_path }}"
+      dest: "{{ local_path }}"
+      checksum: feb45147aecf2f6a1ddbd28e16fcda602212a7af
+    register: download_result
+
+  - name: Install Python 3.10.4
+    win_package:
+      path: "{{ local_path }}"
+      product_id: '{{ item }}'
+      arguments: "/quiet InstallAllUsers=1 PrependPath=1 Include_pip=1"
+      # arguments: "/quiet /uninstall"
+      state: present
+    loop:
+    - '{691AAAA1-FE86-4973-8DA2-6AA2B3327562}'
+    - '{FBCE87D2-C7FC-47AB-B870-A0613A081CFD}'
+...

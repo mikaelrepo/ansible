@@ -1,0 +1,46 @@
+---
+- name: Create app group inventory
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+  - name: Create inventory
+    ansible.windows.win_powershell:
+      script: |
+        Import-Module powershell-yaml
+        $appGroups = (Get-ADGroup -Filter * -searchbase "OU=apps,OU=groups,OU=Sweden,DC=ansible,DC=test" -Properties *).Name
+
+        $appGroupsMembers = foreach($item in $appGroups){
+            Get-ADGroupMember -Identity $item | ForEach-Object -Process {
+                $psObject = New-Object -TypeName psobject
+                $psObject | Add-Member -MemberType NoteProperty -Name Groups -Value $item
+                $psObject | Add-Member -MemberType NoteProperty -Name Computername -Value $_.name
+                $ipAddress = (Resolve-DnsName $_.name).IPAddress
+                $psObject | Add-Member -MemberType NoteProperty -Name IPAddress -Value $ipAddress
+                $psObject
+            }
+        }
+
+        $inventoryTable = @{}
+        foreach($item in $appGroups){
+            $inventoryTable.Add($item, ($newTable = @{}))
+            $inventoryTable.$($item).Add("hosts", ($newTable = @{}))
+        }
+
+        foreach($item in $appGroupsMembers){
+            $inventoryTable.$($item.Groups).hosts.Add($item.Computername, ($newhashtable = @{}))
+            $inventoryTable.$($item.Groups).hosts.$($item.Computername).Add("ansible_host", $item.IPAddress)
+        }
+
+        ConvertTo-Yaml -Data $inventoryTable -OutFile "c:\ansible\inventory\inventory.yml" -Force
+
+  - name: Update Gitlab repo
+    ansible.windows.win_shell: |
+      cd "c:\ansible"
+      git pull
+      git merge
+      git add *
+      git commit -m "update"
+      git push
+...

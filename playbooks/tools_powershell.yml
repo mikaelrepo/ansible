@@ -1,0 +1,42 @@
+---
+- name: Install Powershell
+  hosts: all
+  gather_facts: true
+  become: yes
+
+  tasks:
+
+  - name: Centos - Register the Microsoft RedHat repository.
+    ansible.builtin.shell: |
+      curl https://packages.microsoft.com/config/rhel/8/prod.repo | tee /etc/yum.repos.d/microsoft.repo
+    args:
+      executable: /usr/bin/bash
+    register: centos
+    when: ansible_distribution == 'CentOS'
+
+  - debug: var=centos.stdout_lines
+    when: ansible_distribution == 'CentOS'
+
+  - name: Ubuntu - Update packages and register Microsoft GPG keys
+    ansible.builtin.shell: |
+      apt-get update
+      apt-get install -y wget apt-transport-https software-properties-common
+      wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+      sudo dpkg -i packages-microsoft-prod.deb
+      sudo apt-get update
+    args:
+      executable: /usr/bin/bash
+    register: ubuntu
+    when: ansible_distribution == 'Ubuntu'
+
+  - debug: var=ubuntu.stdout_lines
+    when: ansible_distribution == 'Ubuntu'
+
+  - name: Install Powershell
+    ansible.builtin.package:
+      name: powershell
+      state: present
+    register: powershell
+
+  - debug: var=powershell
+...

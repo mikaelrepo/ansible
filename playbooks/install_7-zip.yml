@@ -1,0 +1,31 @@
+---
+- name: Install 7-zip.
+  hosts: windows
+  gather_facts: false
+  vars:
+    install_path: \\192.168.1.100\programs\7zip\2107\7z2107-x64.exe
+
+  tasks:
+
+  - name: Get file info.
+    win_stat:
+      path: "{{ install_path }}"
+      get_checksum: yes
+      checksum_algorithm: sha256
+    register: sha256_checksum
+    
+  - name: Check if file exists and checksum is correct.
+    run_once: false
+    assert:
+      that:
+        - sha256_checksum.stat.exists == true
+        - sha256_checksum.stat.checksum == '0b461f0a0eccfc4f39733a80d70fd1210fdd69f600fb6b657e03940a734e5fc1'
+  
+  - name: Install 7-zip
+    win_package:
+      path: "{{ install_path }}"
+      product_id: 7-zip
+      arguments: /S
+      state: present
+
+...

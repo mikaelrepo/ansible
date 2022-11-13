@@ -1,0 +1,25 @@
+---
+- name: Install 7-zip.
+  hosts: windows
+  gather_facts: false
+  vars:
+    remote_path: https://www.7-zip.org/a/7z2201-x64.exe
+    local_path: c:\windows\temp\7z2201-x64.exe
+
+  tasks:
+
+  - name: Download
+    ansible.builtin.win_get_url:
+      url: "{{ remote_path }}"
+      dest: "{{ local_path }}"
+      checksum: c0dcae7c4c80be25661d22400466b4ea074fc580
+    register: download_result
+
+  - name: Install
+    ansible.builtin.win_package:
+      path: "{{ local_path }}"
+      product_id: 7-zip
+      arguments: /S
+      state: present
+
+...

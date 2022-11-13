@@ -1,0 +1,12 @@
+AppsNotepadPlusPlus:
+  hosts:
+    WINDOWS2:
+      ansible_host: 192.168.1.102
+Apps7zip:
+  hosts:
+    WINDOWS1:
+      ansible_host: 192.168.1.101
+AppsFilezilla:
+  hosts:
+    WINDOWS2:
+      ansible_host: 192.168.1.102

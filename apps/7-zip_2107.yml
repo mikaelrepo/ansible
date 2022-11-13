@@ -1,0 +1,9 @@
+---
+- name: 7-zip use tag install or uninstall
+  hosts: all
+  gather_facts: false
+
+  roles:
+    - role: 7-zip/2107
+    
+...

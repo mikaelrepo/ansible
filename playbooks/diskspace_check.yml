@@ -1,0 +1,27 @@
+---
+- name: Check diskspace.
+  hosts: windows1
+  gather_facts: true
+
+  tasks:
+
+  - name: Get disk facts
+    community.windows.win_disk_facts:
+
+  - name: Output first disk size
+    debug:
+      var: ansible_facts
+
+  - name: Convert first system disk into various formats
+    debug:
+      msg: '{{ disksize_gib }} vs {{ disksize_gib_human }}'
+    vars:
+      # Get first system disk
+      disk: '{{ ansible_facts.disks|selectattr("system_disk")|first }}'
+
+      # Show disk size in Gibibytes returns "223.6 GiB" (human readable)
+      # disksize_gib_human: '{{ disk.size|filesizeformat }}'
+      # returns "224 GiB" (value in GiB)
+      # disksize_gib: '{{ (disk.size/1024|pow(3))|round|int }} GiB'
+
+...

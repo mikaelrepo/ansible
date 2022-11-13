@@ -1,0 +1,17 @@
+---
+- name: Run Powershell commands
+  hosts: all
+  gather_facts: false
+  become: no
+
+  tasks:
+
+  - name: Get-Childitem
+    ansible.builtin.shell: |
+      Get-ChildItem
+    args:
+      executable: /usr/bin/pwsh
+    register: centos
+
+  - debug: var=centos.stdout_lines
+...

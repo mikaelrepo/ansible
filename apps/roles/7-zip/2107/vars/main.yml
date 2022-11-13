@@ -1,0 +1,4 @@
+---
+# vars file for 7-zip
+install_path: \\192.168.1.100\programs\7zip\2107\7z2107-x64.exe
+sha256_install: 0b461f0a0eccfc4f39733a80d70fd1210fdd69f600fb6b657e03940a734e5fc1

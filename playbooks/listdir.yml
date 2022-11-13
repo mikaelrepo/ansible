@@ -1,0 +1,12 @@
+---
+- name: List directory
+  hosts: centos
+  gather_facts: false
+
+  tasks:
+
+  - name: Run tree command
+    ansible.builtin.shell: ls -l; pwd
+    register: echo
+  - debug: var=echo.stdout_lines
+...

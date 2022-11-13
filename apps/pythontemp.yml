@@ -1,0 +1,13 @@
+---
+  - name: Install Python 3.10.4
+    win_package:
+      path: "{{ install_path }}"
+      product_id: '{{ item }}'
+      arguments: "/quiet InstallAllUsers=1 PrependPath=1 Include_pip=1"
+      # arguments: "/quiet /uninstall"
+      state: present
+    loop:
+    - '{691AAAA1-FE86-4973-8DA2-6AA2B3327562}'
+    - '{FBCE87D2-C7FC-47AB-B870-A0613A081CFD}'
+
+...

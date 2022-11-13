@@ -1,0 +1,49 @@
+---
+# Tasks install/uninstall 7-zip
+- name: Get file info.
+  win_stat:
+    path: "{{ install_path }}"
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: sha256_checksum
+  tags:
+    - install
+    - never
+    
+- name: Check if file exists and checksum is correct.
+  assert:
+    that:
+      - sha256_checksum.stat.exists == true
+      - sha256_checksum.stat.checksum == "{{ sha256_install }}"
+  tags:
+    - install
+    - never
+    
+  
+- name: Install 7-zip
+  win_package:
+    path: "{{ install_path }}"
+    product_id: 7-zip
+    arguments: /S
+    state: present
+  tags:
+    - install
+    - never
+
+- name: Check if 7-zip is installed.
+  win_stat:
+    path: 'C:\Program Files\7-Zip\Uninstall.exe'
+  register: file_data
+  tags:
+    - uninstall
+    - never
+
+- name: Uninstall 7-zip
+  win_package:
+    path: 'C:\Program Files\7-Zip\Uninstall.exe'
+    arguments: /S
+    state: present
+  tags:
+    - uninstall
+    - never
+  when: file_data.stat.exists
